@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anonimizador de Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* VARIABLES DE TEMA */
+    :root[data-theme="dark"] {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --input-bg: #030712;
+      --input-border: #374151;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --btn-secondary-bg: #1f2937;
+      --btn-secondary-border: #374151;
+      --btn-secondary-text: #e5e7eb;
+      --btn-secondary-hover: #374151;
+      --tag-bg: #1f2937;
+      --tag-border: #374151;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --input-bg: #f8fafc;
+      --input-border: #cbd5e1;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --btn-secondary-bg: #f1f5f9;
+      --btn-secondary-border: #cbd5e1;
+      --btn-secondary-text: #334155;
+      --btn-secondary-hover: #e2e8f0;
+      --tag-bg: #f1f5f9;
+      --tag-border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 30px 20px;
+      display: flex;
+      justify-content: center;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .wrapper {
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 20px;
+    }
+
+    .header-text h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .header-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* THEME SWITCHER */
+    .theme-toggle-btn {
+      background: var(--btn-secondary-bg);
+      border: 1px solid var(--btn-secondary-border);
+      color: var(--btn-secondary-text);
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 0; /* Rectangular */
+      transition: background 0.2s;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 850px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* RECTANGULAR CARDS */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0; /* Rectangular estricto */
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .preset-selector {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .chip-btn {
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border: 1px solid var(--btn-secondary-border);
+      padding: 5px 12px;
+      border-radius: 0; /* Rectangular */
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .chip-btn:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    textarea {
+      width: 100%;
+      height: 280px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 0; /* Rectangular */
+      padding: 12px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .lang-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    select {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 0; /* Rectangular */
+      font-size: 13px;
+      outline: none;
+    }
+
+    .btn-action {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 0; /* Rectangular */
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-action:disabled {
+      background: var(--btn-secondary-border);
+      cursor: not-allowed;
+    }
+
+    .output-box {
+      width: 100%;
+      height: 280px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 0; /* Rectangular */
+      padding: 12px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .copy-btn {
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border: 1px solid var(--btn-secondary-border);
+      padding: 5px 12px;
+      border-radius: 0; /* Rectangular */
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    /* ENTITIES PANEL */
+    .entities-panel {
+      margin-top: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0; /* Rectangular */
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .entities-header {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .entity-tag {
+      background: var(--tag-bg);
+      border: 1px solid var(--tag-border);
+      border-radius: 0; /* Rectangular */
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .entity-type {
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 5px;
+      border-radius: 0; /* Rectangular */
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Tag themes */
+    .tag-rut { background: #fee2e2; color: #991b1b; }
+    .tag-person { background: #dbeafe; color: #1e40af; }
+    .tag-location { background: #d1fae5; color: #065f46; }
+    .tag-profession { background: #fef3c7; color: #92400e; }
+    .tag-financial { background: #f3e8ff; color: #6b21a8; }
+    .tag-other { background: #e2e8f0; color: #334155; }
+
+    :root[data-theme="dark"] .tag-rut { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    :root[data-theme="dark"] .tag-person { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+    :root[data-theme="dark"] .tag-location { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    :root[data-theme="dark"] .tag-profession { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
+    :root[data-theme="dark"] .tag-financial { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+    :root[data-theme="dark"] .tag-other { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+
+    .entity-val {
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <div class="header-text">
+        <h1>Anonimizador de Documentación</h1>
+        <p>Protección y reemplazo de información sensible en contratos y escrituras</p>
+      </div>
+      <div>
+        <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()">Modo Claro</button>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <!-- Input Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Documento Original</span>
+        </div>
+
+        <div class="preset-selector">
+          <button class="chip-btn" onclick="loadSample(1)">Contrato Laboral</button>
+          <button class="chip-btn" onclick="loadSample(2)">Poder Notarial</button>
+          <button class="chip-btn" onclick="loadSample(3)">Pago / Finanzas</button>
+        </div>
+
+        <textarea id="inputText" placeholder="Pegue el texto del contrato, minuta o documento aquí..."></textarea>
+
+        <div class="toolbar">
+          <div class="lang-wrapper">
+            <span style="font-size: 13px; color: var(--text-muted);">Idioma:</span>
+            <select id="languageSelect">
+              <option value="es" selected>Español (es)</option>
+              <option value="en">Inglés (en)</option>
+            </select>
+          </div>
+
+          <button id="anonymizeBtn" class="btn-action" onclick="runAnonymize()">Anonimizar</button>
+        </div>
+      </div>
+
+      <!-- Output Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Texto Anonimizado</span>
+          <button class="copy-btn" onclick="copyResult()">Copiar resultado</button>
+        </div>
+
+        <div id="outputText" class="output-box">Haga clic en "Anonimizar" para ver el resultado sin datos sensibles...</div>
+      </div>
+    </div>
+
+    <!-- Detected entities card -->
+    <div class="entities-panel">
+      <div class="entities-header">
+        <span>Entidades Identificadas en el Documento</span>
+        <span id="entityCount" style="color: var(--text-muted); font-size: 13px;">0 detectadas</span>
+      </div>
+      <div id="entitiesContainer" class="badge-list">
+        <span style="color: var(--text-muted); font-size: 13px;">No se han procesado entidades aún.</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const samples = {
+      1: "En Santiago de Chile, don Daniel Alejandro Trigo Tabilo, de profesión ingeniero civil, estado civil soltero, de 21 años, cédula de identidad y RUT 21.453.124-0, domiciliado en PASAJE MANUEL RODRIGUEZ 1490, comuna de Maipú, teléfono +56912345678, correo dtrigo@empresa.cl, quien percibirá honorarios por $1.500.000 pesos en la cuenta corriente 12345678 del Banco Santander.",
+      2: "Don Carlos Alberto Mendoza Silva, en su calidad de gerente general y representante legal de Inversiones Norte SpA, con cédula de identidad n° 15.342.119-4 y domicilio en Avenida Providencia 2340 depto 502, Providencia.",
+      3: "El pago por la suma de $850.000 se realizará mediante transferencia electrónica a la cuenta corriente 9876543210 del Banco de Chile a nombre de Juan Andrés Pérez Soto, rut 12.345.678-9, correo cobranza@empresa.com."
+    };
+
+    function loadSample(num) {
+      document.getElementById('inputText').value = samples[num];
+    }
+
+    // Cargar por defecto la muestra 1
+    loadSample(1);
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    }
+
+    function getTagClass(type) {
+      if (type.includes('RUT') || type.includes('ID')) return 'tag-rut';
+      if (type.includes('PERSON')) return 'tag-person';
+      if (type.includes('LOCATION')) return 'tag-location';
+      if (type.includes('PROFESSION')) return 'tag-profession';
+      if (type.includes('FINANCIAL') || type.includes('IBAN')) return 'tag-financial';
+      return 'tag-other';
+    }
+
+    async function runAnonymize() {
+      const text = document.getElementById('inputText').value;
+      const lang = document.getElementById('languageSelect').value;
+      const btn = document.getElementById('anonymizeBtn');
+      const outputText = document.getElementById('outputText');
+      const entitiesContainer = document.getElementById('entitiesContainer');
+      const entityCount = document.getElementById('entityCount');
+
+      if (!text.trim()) {
+        alert("Por favor introduzca texto.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Procesando...';
+
+      try {
+        const response = await fetch('/api/anonymize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text, language: lang })
+        });
+
+        const data = await response.json();
+        outputText.innerText = data.anonymized_text || "(Sin texto)";
+
+        entitiesContainer.innerHTML = '';
+        if (data.detected_entities && data.detected_entities.length > 0) {
+          entityCount.innerText = `${data.detected_entities.length} detectadas`;
+          data.detected_entities.forEach(item => {
+            const tag = document.createElement('div');
+            tag.className = 'entity-tag';
+            tag.innerHTML = `
+              <span class="entity-type ${getTagClass(item.entity_type)}">${item.entity_type}</span>
+              <span class="entity-val">"${item.text}"</span>
+              <span style="color: var(--text-muted); font-size: 11px;">(${Math.round(item.score * 100)}%)</span>
+            `;
+            entitiesContainer.appendChild(tag);
+          });
+        } else {
+          entityCount.innerText = "0 detectadas";
+          entitiesContainer.innerHTML = '<span style="color: var(--text-muted); font-size: 13px;">No se encontraron datos sensibles.</span>';
+        }
+
+      } catch (err) {
+        outputText.innerText = "Error al procesar: " + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Anonimizar';
+      }
+    }
+
+    function copyResult() {
+      const text = document.getElementById('outputText').innerText;
+      if (!text || text.includes('Haga clic en')) return;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Texto copiado al portapapeles.");
+      });
+    }
+  </script>
+</body>
+</html>

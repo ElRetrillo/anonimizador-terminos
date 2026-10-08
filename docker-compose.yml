@@ -1,0 +1,7 @@
+services:
+  presidio-web:
+    build: .
+    container_name: presidio_app
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
