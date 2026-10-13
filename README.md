@@ -31,31 +31,51 @@ El sistema se ejecuta completamente en un contenedor Docker con modelos de lengu
 
 ---
 
-## Entidades Detectadas y Anonimizadas
+## Entidades Detectadas y Anonimizadas en Español
 
-El motor cuenta con reconocedores entrenados y adaptados para terminologia legal y contractual en espanol:
+El motor cuenta con reconocedores entrenados y adaptados para terminología legal y contractual con etiquetas 100% en español y clasificación granular para evitar sobreutilizar categorías genéricas como Organización:
 
-- <CL_RUT>: RUT chileno con o sin puntos, guion y digito verificador numerico o K (ej. 21.453.124-0).
-- <ID_DOCUMENT>: Cedulas de identidad, DNI y pasaportes.
-- <PERSON>: Nombres y apellidos completos identificados por el modelo de procesamiento de lenguaje natural en espanol.
-- <LOCATION>: Domicilios comerciales y particulares (calles, avenidas, pasajes, numeros de domicilio, departamentos, oficinas, comunas y regiones).
-- <PROFESSION>: Profesiones, oficios y cargos directivos (abogado, ingeniero, gerente general, representante legal, contador, etc.).
-- <AGE>: Expresiones de edad en lenguaje natural (ej. "de 21 anos", "tiene 35 anos", "edad: 40").
-- <MARITAL_STATUS>: Estado civil (soltero/a, casado/a, divorciado/a, viudo/a, conviviente civil).
-- <IBAN_CODE>: Cuentas bancarias corrientes, vistas y cuentas de ahorro asociadas a entidades bancarias.
-- <FINANCIAL_AMOUNT>: Montos, honorarios, remuneraciones y pagos en CLP, UF, USD.
-- <PHONE_NUMBER>: Numeros telefonicos fijos y moviles chilenos e internacionales.
-- <EMAIL_ADDRESS>: Direcciones de correo electronico.
+- `<RUT>`: Rol Único Tributario chileno con o sin puntos, guión y dígito verificador numérico o K (ej. `21.453.124-0`).
+- `<PERSONA>`: Nombres y apellidos completos de personas naturales.
+- `<EMPRESA>`: Razones sociales, sociedades por acciones (SpA), sociedades anónimas (S.A.), limitadas (Ltda.), EIRL, y corporaciones.
+- `<ENTIDAD_BANCARIA>`: Bancos y entidades financieras (Banco Santander, Banco de Chile, BancoEstado, BCI, Scotiabank, Itaú, etc.).
+- `<NOTARIA>`: Notarías públicas y notarios actuantes en escrituras y contratos.
+- `<INSTITUCION_PUBLICA>`: Organismos del Estado y reguladores (SII, Tesorería General, Conservador de Bienes Raíces, Registro Civil, etc.).
+- `<ORGANIZACION>`: Organizaciones civiles, gremiales y fundaciones.
+- `<DIRECCION>`: Domicilios específicos, pasajes, calles, avenidas, departamentos y números de oficina.
+- `<UBICACION>`: Ciudades, comunas, regiones y países.
+- `<DOCUMENTO_IDENTIDAD>`: Cédulas de identidad, DNI y pasaportes.
+- `<CARGO_O_PROFESION>`: Profesiones, oficios y cargos directivos (abogado, ingeniero, gerente general, representante legal, etc.).
+- `<EDAD>`: Expresiones de edad en lenguaje natural (ej. "de 21 años", "edad: 40").
+- `<ESTADO_CIVIL>`: Estado civil (soltero/a, casado/a, divorciado/a, viudo/a, conviviente civil).
+- `<CUENTA_BANCARIA>`: Cuentas bancarias corrientes, vistas, RUT y cuentas de ahorro.
+- `<MONTO_FINANCIERO>`: Montos, honorarios, remuneraciones y pagos en CLP, UF, USD o EUR.
+- `<TELEFONO>`: Números telefónicos fijos y móviles.
+- `<CORREO_ELECTRONICO>`: Direcciones de e-mail.
+- `<NACIONALIDAD>`: Nacionalidad declarada en comparecencias.
+- `<FECHA>`: Fechas contractuales en lenguaje formal o natural.
 
 ---
 
 ## Caracteristicas de la Interfaz Web
 
-- Diseno rectangular sobrio orientado a entornos corporativos.
-- Selector de modo claro y modo oscuro para la visualizacion.
-- Plantillas de prueba integradas (Contrato Laboral, Poder Notarial, Pagos/Finanzas).
-- Visualizacion en tiempo real de las entidades detectadas con desglose del tipo y nivel de confianza.
-- Boton de copiado directo del texto anonimizado al portapapeles.
+- **Modo Documento PDF**:
+  - Subida mediante arrastrar y soltar (Drag & Drop) o explorador de archivos.
+  - Escaneo automático de todas las páginas del PDF y detección de datos sensibles (PII).
+  - Aplicación de redacciones criptográficas permanentes en las páginas del PDF.
+  - Estilos de censura visual configurables (Etiqueta corporativa `[CL_RUT]`, Blackout sólido o Resalte protector).
+  - Descarga inmediata del PDF anonimizado y del texto extraído (.txt).
+  - **Gestión de almacenamiento libre de conflictos**: Los documentos se procesan en la carpeta local aislada `processed_docs/` con identificadores únicos UUID para prevenir sobreescrituras y colisiones.
+  - **Política de privacidad estricta**: Opción predeterminada para eliminar el archivo del servidor de forma inmediata una vez finalizada la descarga (o vaciado manual mediante el botón de limpieza).
+  - Limpieza automática de archivos temporales con más de 1 hora de antigüedad.
+- **Modo Texto / Minuta**:
+  - Procesamiento directo de minutas y fragmentos de texto en pantalla.
+  - Plantillas de prueba integradas (Contrato Laboral, Poder Notarial, Pagos/Finanzas).
+  - Botón de copiado directo al portapapeles.
+- **Diseño y Estética**:
+  - Diseño rectangular sobrio adaptado a estándares corporativos y legales.
+  - Selector de modo oscuro y modo claro con persistencia de variables de diseño.
+  - Métricas e insignias detalladas de entidades detectadas con nivel de confianza y número de página.
 
 ---
 
@@ -71,14 +91,15 @@ python test_cases.py
 
 ## Estructura del Repositorio
 
-- Dockerfile: Definicion de la imagen base con Python 3.12 y descarga de modelos spaCy (es_core_news_sm y en_core_web_sm).
-- docker-compose.yml: Archivo de orquestacion para iniciar el servicio en el puerto 8000.
-- main.py: Servicio web en FastAPI que expone la interfaz y la API de procesamiento.
-- enterprise_recognizers.py: Modulo con las expresiones regulares y patrones contextuales en espanol.
-- test_cases.py: Suite de pruebas con casos contractuales y legales.
-- requirements.txt: Lista de dependencias de Python.
-- templates/index.html: Interfaz de usuario.
-- .gitignore: Exclusiones de archivos temporales de Python y del sistema.
+- `Dockerfile`: Definición de la imagen base con Python 3.12, PyMuPDF y descarga de modelos spaCy (`es_core_news_sm` y `en_core_web_sm`).
+- `docker-compose.yml`: Orquestación del servicio en el puerto 8000 con volumen montado para `processed_docs/`.
+- `main.py`: Servicio FastAPI con endpoints para texto (`/api/anonymize`), escaneo/anonimización de PDF (`/api/anonymize-pdf`), descarga segura (`/api/download-pdf/{file_id}`) y vaciado (`/api/cleanup-docs`).
+- `enterprise_recognizers.py`: Patrones regex y reconocedores contextuales para contratos en español (RUT, montos monetarios, cuentas bancarias, direcciones, etc.).
+- `test_cases.py`: Suite de validación de casos empresariales.
+- `requirements.txt`: Dependencias del sistema (FastAPI, PyMuPDF, python-multipart, Presidio, Jinja2).
+- `processed_docs/`: Directorio dedicado al almacenamiento temporal y seguro de documentos procesados.
+- `templates/index.html`: Interfaz corporativa con pestañas de modo PDF y texto libre.
+- `.gitignore`: Exclusión de archivos procesados y temporales.
 
 ---
 

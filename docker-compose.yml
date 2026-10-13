@@ -4,4 +4,6 @@ services:
     container_name: presidio_app
     ports:
       - "8000:8000"
+    volumes:
+      - ./processed_docs:/app/processed_docs
     restart: unless-stopped
